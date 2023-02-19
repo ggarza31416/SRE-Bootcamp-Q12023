@@ -44,5 +44,18 @@ class Token:
 
 
 class Restricted:
+    def __init__(self):
+        # initiating the db connection by using env variables
+        self.key = os.environ['JWT_KEY']
+
     def access_data(self, authorization):
-        return 'test'
+        try:
+            # decoding the JWT token and verify that it's valid
+            decoded_token = jwt.decode(authorization, self.key, algorithms=['HS256'])
+
+            # returning protected data if the user is an admin
+            if decoded_token['role'] == 'admin':
+                return 'You are under protected data'
+            return None
+        except jwt.InvalidTokenError:
+            return None
